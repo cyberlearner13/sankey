@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {  useEffect } from 'react';
+import { connect } from 'react-redux';
+import axios from 'axios';
 
-function App() {
+import CustomSankeyChart from './CustomSankeyChart';
+//import { getSankeyData } from './actions/sankeyActions';
+
+const App = props => {
+  //const [sankeyData, setSankeyData] = useState([{}]);
+  const { dispatch } = props;
+
+
+  useEffect(()=>{
+    const getData = async () => {
+      try{
+        const chartData = await axios.get('http://www.mocky.io/v2/5e7f1fbd2f00006600bac277');
+        dispatch({
+          type: 'GET_CHART_DATA',
+          payload: chartData.data
+        })
+      }
+      catch(e){
+        console.log(e)
+      }
+    }
+   getData()
+
+ },[dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <CustomSankeyChart chartData={props.chartData} t={props.t}/>
     </div>
-  );
+  )
+};
+
+const mapStateToProps = state => {
+  return {
+    chartData: state.sankeyReducer
+  }
 }
 
-export default App;
+export default connect(mapStateToProps)(App);
